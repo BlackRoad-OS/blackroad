@@ -1,0 +1,308 @@
+#!/bin/zsh
+#===============================================================================
+# BR - BlackRoad Agent Command
+# Usage: br <agent> [message]
+#        br-octavia [message]
+#        br-lucidia [message]
+#===============================================================================
+
+AGENT_HOME="${HOME}/.blackroad-agents"
+source "${AGENT_HOME}/core/engine.sh"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Agent colors (zsh associative array)
+typeset -A AGENT_COLORS
+AGENT_COLORS=(
+    octavia "$PURPLE"
+    lucidia "$CYAN"
+    alice "$GREEN"
+    aria "$BLUE"
+    shellfish "$RED"
+)
+
+show_banner() {
+    local agent=$1
+    local color=${AGENT_COLORS[$agent]:-$NC}
+
+    case $agent in
+        octavia)
+            echo -e "${color}"
+            echo "╔═══════════════════════════════════════════════════════════╗"
+            echo "║   ◈ OCTAVIA - The Architect                               ║"
+            echo "╚═══════════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            ;;
+        lucidia)
+            echo -e "${color}"
+            echo "╔═══════════════════════════════════════════════════════════╗"
+            echo "║   ✧ LUCIDIA - The Dreamer                                 ║"
+            echo "╚═══════════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            ;;
+        alice)
+            echo -e "${color}"
+            echo "╔═══════════════════════════════════════════════════════════╗"
+            echo "║   ⚙ ALICE - The Operator                                  ║"
+            echo "╚═══════════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            ;;
+        aria)
+            echo -e "${color}"
+            echo "╔═══════════════════════════════════════════════════════════╗"
+            echo "║   ◐ ARIA - The Interface                                  ║"
+            echo "╚═══════════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            ;;
+        shellfish)
+            echo -e "${color}"
+            echo "╔═══════════════════════════════════════════════════════════╗"
+            echo "║   🐚 SHELLFISH - The Hacker                               ║"
+            echo "╚═══════════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            ;;
+    esac
+}
+
+show_help() {
+    echo "╔═══════════════════════════════════════════════════════════════════╗"
+    echo "║              BLACKROAD AGENT SYSTEM                               ║"
+    echo "║         Your AI. Your Hardware. Your Rules.                       ║"
+    echo "╠═══════════════════════════════════════════════════════════════════╣"
+    echo "║                                                                   ║"
+    echo "║  AGENTS:                                                          ║"
+    echo "║    br octavia [msg]   - The Architect (systems, strategy)         ║"
+    echo "║    br lucidia [msg]   - The Dreamer (creative, vision)            ║"
+    echo "║    br alice [msg]     - The Operator (devops, automation)         ║"
+    echo "║    br aria [msg]      - The Interface (frontend, UX)              ║"
+    echo "║    br shellfish [msg] - The Hacker (security, exploits)           ║"
+    echo "║                                                                   ║"
+    echo "║  COMMANDS:                                                        ║"
+    echo "║    br status          - Show all agent status                     ║"
+    echo "║    br status <agent>  - Show specific agent memory stats          ║"
+    echo "║    br models          - List available models                     ║"
+    echo "║    br setup           - Download and configure models             ║"
+    echo "║    br chat <agent>    - Start interactive chat session            ║"
+    echo "║    br teach <agent>   - Teach agent a new fact                    ║"
+    echo "║    br recall <agent>  - Show agent's memories                     ║"
+    echo "║                                                                   ║"
+    echo "║  SHORTCUTS:                                                       ║"
+    echo "║    br-octavia [msg]   - Direct invoke (add to PATH)               ║"
+    echo "║    br-lucidia [msg]   - Direct invoke                             ║"
+    echo "║                                                                   ║"
+    echo "╚═══════════════════════════════════════════════════════════════════╝"
+}
+
+cmd_status() {
+    local agent=$1
+
+    if [[ -n "$agent" ]]; then
+        agent_status "$agent"
+    else
+        echo "╔═══════════════════════════════════════════════════════════════════╗"
+        echo "║              BLACKROAD AGENT STATUS                               ║"
+        echo "╚═══════════════════════════════════════════════════════════════════╝"
+        echo ""
+
+        local backend=$(detect_backend)
+        echo "Inference Backend: $backend"
+        echo ""
+
+        for agent in octavia lucidia alice aria shellfish; do
+            local db="${MEMORY_DIR}/${agent}.db"
+            if [[ -f "$db" ]]; then
+                local count=$(sqlite3 "$db" "SELECT COUNT(*) FROM memories;" 2>/dev/null || echo "0")
+                echo "  ${AGENT_COLORS[$agent]}●${NC} $agent: $count memories"
+            else
+                echo "  ○ $agent: not initialized"
+            fi
+        done
+        echo ""
+    fi
+}
+
+cmd_chat() {
+    local agent=$1
+
+    if [[ -z "$agent" ]]; then
+        echo "Usage: br chat <agent>"
+        return 1
+    fi
+
+    show_banner "$agent"
+    echo "Type 'exit' or Ctrl+C to end session"
+    echo ""
+
+    while true; do
+        echo -ne "${AGENT_COLORS[$agent]}${agent}>${NC} "
+        read -r input
+
+        if [[ "$input" == "exit" ]] || [[ -z "$input" ]]; then
+            echo "Session ended."
+            break
+        fi
+
+        invoke_agent "$agent" "$input"
+        echo ""
+    done
+}
+
+cmd_teach() {
+    local agent=$1
+    shift
+    local fact="$*"
+
+    if [[ -z "$agent" ]] || [[ -z "$fact" ]]; then
+        echo "Usage: br teach <agent> <key>=<value>"
+        echo "Example: br teach octavia 'favorite_language=Rust'"
+        return 1
+    fi
+
+    local key="${fact%%=*}"
+    local value="${fact#*=}"
+
+    init_memory "$agent"
+    learn_fact "$agent" "$key" "$value"
+    echo "Taught $agent: $key = $value"
+}
+
+cmd_recall() {
+    local agent=$1
+    local limit=${2:-20}
+
+    if [[ -z "$agent" ]]; then
+        echo "Usage: br recall <agent> [limit]"
+        return 1
+    fi
+
+    echo "=== ${agent}'s Recent Memories ==="
+    recall "$agent" "$limit"
+    echo ""
+    echo "=== ${agent}'s Known Facts ==="
+    recall_facts "$agent"
+}
+
+cmd_models() {
+    echo "╔═══════════════════════════════════════════════════════════════════╗"
+    echo "║              AVAILABLE MODELS                                     ║"
+    echo "╚═══════════════════════════════════════════════════════════════════╝"
+    echo ""
+
+    if [[ -d "$MODELS_DIR" ]]; then
+        ls -lh "$MODELS_DIR"/*.gguf 2>/dev/null || echo "No .gguf models found in $MODELS_DIR"
+    else
+        echo "Models directory not found: $MODELS_DIR"
+    fi
+
+    echo ""
+    echo "Download models with: br setup"
+}
+
+cmd_setup() {
+    echo "╔═══════════════════════════════════════════════════════════════════╗"
+    echo "║              BLACKROAD AGENT SETUP                                ║"
+    echo "╚═══════════════════════════════════════════════════════════════════╝"
+    echo ""
+
+    # Check for inference backend
+    local backend=$(detect_backend)
+    echo "Current backend: $backend"
+
+    if [[ "$backend" == "none" ]]; then
+        echo ""
+        echo "No inference backend found. Install one:"
+        echo ""
+        echo "  Option 1 - llama.cpp (recommended for Mac/Pi):"
+        echo "    cd ~/BlackRoad-AI && git clone https://github.com/BlackRoad-AI/llama.cpp"
+        echo "    cd llama.cpp && make -j"
+        echo ""
+        echo "  Option 2 - MLX (Apple Silicon only):"
+        echo "    pip3 install mlx-lm"
+        echo ""
+        echo "  Option 3 - Ollama (easiest):"
+        echo "    brew install ollama"
+        echo "    ollama pull phi3:mini"
+        echo ""
+    fi
+
+    echo ""
+    echo "Recommended models for this hardware:"
+
+    # Detect hardware
+    if [[ "$(uname)" == "Darwin" ]]; then
+        local mem=$(sysctl -n hw.memsize 2>/dev/null)
+        local mem_gb=$((mem / 1024 / 1024 / 1024))
+        echo "  Detected: macOS with ${mem_gb}GB RAM"
+
+        if [[ $mem_gb -ge 32 ]]; then
+            echo "  → Qwen2.5-32B-Q4 (best quality)"
+            echo "  → Llama-3.1-70B-Q4 (if you have 64GB+)"
+        elif [[ $mem_gb -ge 16 ]]; then
+            echo "  → Qwen2.5-14B-Q4"
+            echo "  → Phi-3-medium (14B)"
+        else
+            echo "  → Phi-3-mini (3.8B)"
+            echo "  → Qwen2.5-7B-Q4"
+        fi
+    else
+        echo "  Detected: Linux/Pi"
+        echo "  → Phi-3-mini (3.8B) - works on 4GB Pi"
+        echo "  → TinyLlama (1.1B) - fastest on Pi"
+    fi
+
+    echo ""
+    echo "Download with:"
+    echo "  huggingface-cli download Qwen/Qwen2.5-14B-Instruct-GGUF --local-dir $MODELS_DIR"
+}
+
+# Main dispatch
+main() {
+    local cmd=$1
+    shift
+
+    case $cmd in
+        ""|help|-h|--help)
+            show_help
+            ;;
+        status)
+            cmd_status "$@"
+            ;;
+        chat)
+            cmd_chat "$@"
+            ;;
+        teach)
+            cmd_teach "$@"
+            ;;
+        recall)
+            cmd_recall "$@"
+            ;;
+        models)
+            cmd_models
+            ;;
+        setup)
+            cmd_setup
+            ;;
+        octavia|lucidia|alice|aria|shellfish)
+            if [[ -n "$*" ]]; then
+                show_banner "$cmd"
+                invoke_agent "$cmd" "$@"
+            else
+                cmd_chat "$cmd"
+            fi
+            ;;
+        *)
+            echo "Unknown command: $cmd"
+            echo "Run 'br help' for usage"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
