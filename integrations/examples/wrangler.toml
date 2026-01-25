@@ -1,0 +1,72 @@
+# Cloudflare Workers/Pages Configuration
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "blackroad-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Workers configuration
+workers_dev = true
+route = { pattern = "api.example.com/*", zone_name = "example.com" }
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id"
+preview_id = "your-preview-kv-namespace-id"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "COUNTER"
+class_name = "Counter"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["Counter"]
+
+# R2 Buckets
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "my-bucket"
+preview_bucket_name = "my-bucket-preview"
+
+# D1 Databases
+[[d1_databases]]
+binding = "DB"
+database_name = "my-database"
+database_id = "your-database-id"
+
+# Queues
+[[queues.producers]]
+queue = "my-queue"
+binding = "QUEUE"
+
+[[queues.consumers]]
+queue = "my-queue"
+max_batch_size = 10
+max_batch_timeout = 30
+
+# Secrets (set via wrangler secret put)
+# - API_KEY
+# - DATABASE_URL
+
+# Preview environment
+[env.preview]
+name = "blackroad-worker-preview"
+workers_dev = true
+
+# Production environment
+[env.production]
+name = "blackroad-worker"
+workers_dev = false
+routes = [
+  { pattern = "api.example.com/*", zone_name = "example.com" }
+]
