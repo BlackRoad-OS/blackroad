@@ -1,6 +1,19 @@
 {
   "name": "blackroad",
+  "version": "1.0.0",
+  "description": "🖤 BlackRoad Monorepo - The Road to AI Sovereignty",
   "private": true,
+  "author": {
+    "name": "BlackRoad OS, Inc.",
+    "email": "blackroad.systems@gmail.com",
+    "url": "https://blackroad.io"
+  },
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackRoad-OS/blackroad.git"
+  },
+  "homepage": "https://blackroad.io",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -9,5 +22,9 @@
   "devDependencies": {
     "turbo": "^2.0.0"
   },
-  "packageManager": "pnpm@9.0.0"
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  }
 }

@@ -1,4 +1,15 @@
-# Lucidia Core
+# 🌍 Lucidia Core
+
+## Status: 🟢 GREEN LIGHT - Production Ready
+
+**Last Updated:** 2026-01-27
+**Maintained By:** BlackRoad OS, Inc.
+
+---
+
+[![BlackRoad OS](https://img.shields.io/badge/BlackRoad-OS-FF1D6C?style=for-the-badge)](https://blackroad.io)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![License](https://img.shields.io/badge/license-Proprietary-9C27B0?style=for-the-badge)](LICENSE)
 
 **AI reasoning engines for specialized domains - physics, mathematics, chemistry, geology, and more.**
 
@@ -6,7 +17,7 @@
 pip install lucidia-core
 ```
 
-## What is this?
+## 🎯 What is this?
 
 Lucidia is a collection of specialized AI reasoning agents, each modeled after a domain expert:
 
@@ -23,9 +34,9 @@ Lucidia is a collection of specialized AI reasoning agents, each modeled after a
 | **Poet** | Creative | Poetry, lyrical composition, narrative |
 | **Speaker** | NLP | Speech synthesis, communication, translation |
 
-## Quick Start
+## 🚀 Quick Start
 
-### CLI Usage
+### 💻 CLI Usage
 
 ```bash
 # List available agents
@@ -38,7 +49,7 @@ lucidia run physicist --query "Model energy flow in a thermal system"
 lucidia api --port 8000
 ```
 
-### API Usage
+### 🌐 API Usage
 
 ```bash
 # Start the server
@@ -65,7 +76,7 @@ curl -X POST http://localhost:8000/mathematician/compute \
   -d '{"query": "Solve x^2 - 5x + 6 = 0"}'
 ```
 
-### Python Usage
+### 🐍 Python Usage
 
 ```python
 from lucidia_core import get_physicist, get_mathematician
@@ -78,7 +89,7 @@ seed = load_seed("codex21.yaml")
 MathematicianSeed, load_seed = get_mathematician()
 ```
 
-## API Endpoints
+## 📡 API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -92,7 +103,7 @@ MathematicianSeed, load_seed = get_mathematician()
 | `/analyst/insights` | POST | Data insights |
 | `/architect/design` | POST | System design |
 
-## Architecture
+## 🧬 Architecture
 
 ```
 lucidia-core/
@@ -113,7 +124,7 @@ lucidia-core/
 └── quantum_engine/     # Quantum computing extensions
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 Each agent is configured via a YAML "seed" file (e.g., `codex21.yaml` for Physicist):
 
@@ -126,29 +137,27 @@ system_charter:
   core_principle: "ground every run on measured observations"
 ```
 
-## License
-
-MIT - See [LICENSE](LICENSE) for details.
-
----
-
-Built by [BlackRoad OS](https://blackroad.io)
-
 ---
 
 ## 📜 License & Copyright
 
-**Copyright © 2026 BlackRoad OS, Inc. All Rights Reserved.**
+**© 2025-2026 BlackRoad OS, Inc. All Rights Reserved.**
 
-**CEO:** Alexa Amundson | **PROPRIETARY AND CONFIDENTIAL**
+**CEO:** Alexa Amundson | **🔒 PROPRIETARY AND CONFIDENTIAL**
 
-This software is NOT for commercial resale. Testing purposes only.
+This software is provided for authorized use only.
 
-### 🏢 Enterprise Scale:
-- 30,000 AI Agents
-- 30,000 Human Employees
-- CEO: Alexa Amundson
+### 🏢 Enterprise Scale
+- 🤖 30,000 AI Agents
+- 👥 30,000 Human Employees
 
 **Contact:** blackroad.systems@gmail.com
 
 See [LICENSE](LICENSE) for complete terms.
+
+---
+
+<p align="center">
+  <strong>🛣️ The Road to AI Sovereignty</strong><br>
+  Built by <a href="https://blackroad.io">BlackRoad OS</a>
+</p>

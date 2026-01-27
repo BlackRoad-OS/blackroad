@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "lucidia-core"
 version = "0.1.0"
-description = "Lucidia: AI reasoning engines - physicist, mathematician, chemist, geologist, and specialized domain agents"
+description = "🌍 Lucidia: AI reasoning engines - physicist, mathematician, chemist, geologist, and specialized domain agents"
 readme = "README.md"
-license = "MIT"
+license = {text = "Proprietary"}
 requires-python = ">=3.10"
 authors = [
-    { name = "BlackRoad OS", email = "hello@blackroad.io" }
+    { name = "BlackRoad OS, Inc.", email = "blackroad.systems@gmail.com" }
 ]
 keywords = [
     "ai",
@@ -20,14 +20,15 @@ keywords = [
     "mathematics",
     "chemistry",
     "geology",
-    "analysis"
+    "analysis",
+    "blackroad"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
