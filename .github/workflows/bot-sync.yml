@@ -157,7 +157,7 @@ jobs:
               const branchName = `bot/sync-${Date.now()}`;
 
               execSync(`git config user.name "BlackRoad Bot"`);
-              execSync(`git config user.email "bot@blackroad.io"`);
+              execSync(`git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"`);
               execSync(`git checkout -b ${branchName}`);
               execSync(`git add .`);
               execSync(`git commit -m "🤖 chore: Sync bot workflows and config"`);
