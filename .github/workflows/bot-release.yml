@@ -52,7 +52,7 @@ jobs:
 
             if (commits.match(/BREAKING CHANGE|!:/)) {
               bumpType = 'major';
-            } else if (commits.match(/^feat:|^feature:/m)) {
+            } else if (commits.match(/^[0-9a-f]+ (feat:|feature:)/m)) {
               bumpType = 'minor';
             }
 
