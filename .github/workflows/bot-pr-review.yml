@@ -31,19 +31,19 @@ jobs:
               labels.push('enhancement');
             }
             if (title.startsWith('fix:') || title.startsWith('bugfix:')) {
-              labels.push('bugfix');
+              labels.push('bug');
             }
             if (title.startsWith('docs:')) {
               labels.push('documentation');
             }
             if (title.startsWith('refactor:')) {
-              labels.push('refactoring');
+              labels.push('refactor');
             }
             if (title.startsWith('test:')) {
               labels.push('testing');
             }
             if (title.startsWith('chore:')) {
-              labels.push('chore');
+              labels.push('maintenance');
             }
 
             // Size labels
