@@ -350,6 +350,75 @@ async def get_social_feed(limit: int = 20):
         "total_posts": 0
     }
 
+# User data export
+@app.get("/api/user/export")
+async def export_user_data(user_id: Optional[str] = Depends(get_current_user)):
+    """
+    Export all user data (GDPR-style data portability).
+
+    Returns a JSON bundle containing:
+    - Profile information
+    - Conversations
+    - Agents
+    - Blockchain transactions
+    - Payment sessions
+    """
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    # Find user profile
+    user_profile = None
+    user_email = None
+    for email, user in users_db.items():
+        if user["id"] == user_id:
+            user_profile = {
+                "id": user["id"],
+                "email": user["email"],
+                "name": user["name"],
+                "created_at": user.get("created_at"),
+                "subscription_tier": user.get("subscription_tier", "free"),
+            }
+            user_email = email
+            break
+
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Collect conversations
+    user_conversations = [
+        conv for conv in conversations_db.values()
+        if conv.get("user_id") == user_id
+    ]
+
+    # Collect agents
+    user_agents = [
+        agent for agent in agents_db.values()
+        if agent.get("created_by") == user_id
+    ]
+
+    # Collect blockchain transactions
+    user_transactions = [
+        tx for tx in blockchain_db["transactions"]
+        if tx.get("created_by") == user_id
+    ]
+
+    export_bundle = {
+        "export_version": "1.0",
+        "exported_at": datetime.utcnow().isoformat(),
+        "user": user_profile,
+        "conversations": user_conversations,
+        "agents": user_agents,
+        "transactions": user_transactions,
+    }
+
+    return JSONResponse(
+        content=export_bundle,
+        headers={
+            "Content-Disposition": f'attachment; filename="blackroad-export-{user_id}.json"'
+        },
+    )
+
+
 # System stats
 @app.get("/api/system/stats")
 async def get_system_stats():

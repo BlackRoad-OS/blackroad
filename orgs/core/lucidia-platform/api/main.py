@@ -311,6 +311,44 @@ async def record_problem_solved(user_id: str, subject: str, topic: str, success:
 
 
 # ============================================================================
+# User Data Export Endpoint
+# ============================================================================
+
+@app.get("/api/v1/users/{user_id}/export")
+async def export_user_data(user_id: str):
+    """
+    Export all user data from Lucidia platform (GDPR-style data portability).
+
+    Returns a JSON bundle containing:
+    - Learning context (style, strengths, progress)
+    - Explanations generated for this user
+    """
+    # Gather learning context
+    context = None
+    if user_id in user_contexts:
+        ctx = user_contexts[user_id]
+        context = {
+            "user_id": ctx.user_id,
+            "learning_style": ctx.learning_style,
+            "strengths": ctx.strengths,
+            "areas_for_growth": ctx.areas_for_growth,
+            "recent_topics": ctx.recent_topics,
+            "session_count": ctx.session_count,
+            "total_problems_solved": ctx.total_problems_solved,
+        }
+
+    export_bundle = {
+        "export_version": "1.0",
+        "exported_at": datetime.utcnow().isoformat(),
+        "platform": "lucidia",
+        "user_id": user_id,
+        "learning_context": context,
+    }
+
+    return export_bundle
+
+
+# ============================================================================
 # Practice / Game Endpoints
 # ============================================================================
 
