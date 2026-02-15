@@ -9,7 +9,6 @@ import {
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { capitalize } from "@/utils";
 
-// TODO: Add colors in select content
 const COLOR_MODES = [
 	"default",
 	"achromatopsia",
@@ -21,6 +20,17 @@ const COLOR_MODES = [
 	"tritanopia",
 ] as const;
 type ColorMode = (typeof COLOR_MODES)[number];
+
+const COLOR_MODE_SWATCHES: Record<ColorMode, [string, string, string]> = {
+	default: ["bg-red-500", "bg-green-500", "bg-blue-500"],
+	achromatopsia: ["bg-gray-400", "bg-gray-500", "bg-gray-600"],
+	deuteranopia: ["bg-amber-700", "bg-amber-500", "bg-blue-500"],
+	deuteranomaly: ["bg-red-400", "bg-amber-500", "bg-blue-500"],
+	protaponia: ["bg-amber-600", "bg-amber-500", "bg-blue-500"],
+	protanomaly: ["bg-red-300", "bg-yellow-600", "bg-blue-500"],
+	tritanomaly: ["bg-red-500", "bg-green-500", "bg-blue-300"],
+	tritanopia: ["bg-red-500", "bg-green-500", "bg-pink-400"],
+};
 
 export const ColorModeSelect = () => {
 	const [selectedColorMode, setSelectedColorMode] = useLocalStorage<ColorMode>(
@@ -43,7 +53,17 @@ export const ColorModeSelect = () => {
 					<SelectGroup>
 						{COLOR_MODES.map((colorMode) => (
 							<SelectItem key={colorMode} value={colorMode}>
-								{capitalize(colorMode)}
+								<span className="flex items-center gap-2">
+									<span className="flex gap-0.5">
+										{COLOR_MODE_SWATCHES[colorMode].map((swatch, i) => (
+											<span
+												key={i}
+												className={`inline-block h-3 w-3 rounded-full ${swatch}`}
+											/>
+										))}
+									</span>
+									{capitalize(colorMode)}
+								</span>
 							</SelectItem>
 						))}
 					</SelectGroup>
