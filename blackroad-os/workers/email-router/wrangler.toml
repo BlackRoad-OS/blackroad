@@ -7,11 +7,6 @@ account_id = "848cf0b18d51e0170e0d1537aec3505a"
 DOMAIN = "blackroad.io"
 ORG_NAME = "BlackRoad OS"
 
-# Email routing — trigger on all inbound email to @blackroad.io
-[[email]]
-type = "email"
-address = "*@blackroad.io"
-
 [[kv_namespaces]]
 binding = "AGENT_INBOXES"
-id = "placeholder_kv_id"
+id = "d3cbe4e1ab814905b8c29cad110001d1"
