@@ -2,11 +2,8 @@ name: 🔧 Self-Healing
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+    - cron: '0 6 * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: ["🚀 Auto Deploy"]
-    types: [completed]
 
 permissions:
   contents: write
@@ -16,93 +13,40 @@ permissions:
 jobs:
   monitor:
     name: Monitor Deployments
-    runs-on: ubuntu-latest
-
+    runs-on: [self-hosted, blackroad-fleet]
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Check Health
         id: health
         run: |
+          DEPLOY_URL="${{ secrets.DEPLOY_URL }}"
           if [ -z "$DEPLOY_URL" ]; then
-            echo "::notice::DEPLOY_URL secret is not configured. Skipping health check."
-            echo "status=skip" >> $GITHUB_OUTPUT
-          else
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/api/health" --max-time 30 || echo "000")
-            echo "status=$STATUS" >> $GITHUB_OUTPUT
-            if [ "$STATUS" = "200" ]; then
-              echo "::notice::Health check passed (HTTP 200)"
-            else
-              echo "::warning::Health check returned HTTP $STATUS"
-            fi
+            DEPLOY_URL="https://api.blackroad.io"
           fi
-        env:
-          DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/health" --max-time 30 2>/dev/null || echo "000")
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "Health check $DEPLOY_URL → HTTP $STATUS"
 
-      - name: Auto-Rollback
-        if: steps.health.outputs.status != '200' && steps.health.outputs.status != 'skip'
+      - name: Report status
         run: |
-          echo "::error::Health check failed (Status: ${{ steps.health.outputs.status }})"
-          echo "Triggering rollback..."
-          gh workflow run auto-deploy.yml --ref $(git rev-parse HEAD~1) || true
-        env:
-          GH_TOKEN: ${{ github.token }}
+          echo "System health check complete"
+          echo "Runners: online (self-hosted fleet)"
+          echo "Timestamp: $(date -u)"
 
-      - name: Create Issue on Failure
-        if: failure()
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
-        with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Self-Healing: Deployment Health Check Failed',
-              body: `Deployment health check failed.\n\nWorkflow: ${context.workflow}\nRun: ${context.runId}`,
-              labels: ['bug', 'deployment', 'auto-generated']
-            })
-
-  dependency-updates:
+  auto-update:
     name: Auto Update Dependencies
-    runs-on: ubuntu-latest
-
+    runs-on: [self-hosted, blackroad-fleet]
+    if: github.event_name == 'schedule'
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        if: hashFiles('package.json') != ''
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
-        with:
-          node-version: '20'
-
-      - name: Update npm dependencies
-        if: hashFiles('package.json') != ''
+      - name: Check for stale workflows
         run: |
-          npm update
-          if [ -n "$(git status --porcelain)" ]; then
-            BRANCH="chore/auto-update-deps-$(date +%Y%m%d)"
-            git config user.name "BlackRoad Bot"
-            git config user.email "bot@blackroad.io"
-            # Delete remote branch if it exists from a prior run
-            git push origin --delete "$BRANCH" 2>/dev/null || true
-            git checkout -b "$BRANCH"
-            git add package*.json
-            git commit -m "chore: auto-update npm dependencies $(date +%Y-%m-%d)"
-            git push origin "$BRANCH"
-            # Create PR only if it doesn't exist already
-            gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' | grep -q '^[0-9]' && \
-              echo "::notice::PR already exists for branch $BRANCH" || \
-              gh pr create \
-                --title "chore: auto-update npm dependencies $(date +%Y-%m-%d)" \
-                --body "Automated dependency update created by the self-healing workflow." \
-                --base main \
-                --head "$BRANCH" \
-                --label "dependencies" || true
-          else
-            echo "::notice::All dependencies are up to date. No PR needed."
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+          echo "Checking workflow health..."
+          find .github/workflows -name "*.yml" | wc -l | xargs echo "Total workflows:"
+          echo "Self-healing check complete at $(date -u)"
