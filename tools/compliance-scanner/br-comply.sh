@@ -419,53 +419,25 @@ cmd_report() {
 
 # Help
 cmd_help() {
-    cat << 'EOF'
-✅ Compliance Scanner
-
-USAGE:
-  br comply <command>
-
-FRAMEWORKS:
-  pci                      PCI-DSS compliance scan
-  hipaa                    HIPAA compliance scan
-  soc2                     SOC 2 compliance scan
-  gdpr                     GDPR compliance scan
-  report                   Show compliance reports
-
-EXAMPLES:
-  # Scan for compliance
-  br comply pci            # Payment Card Industry
-  br comply hipaa          # Healthcare
-  br comply soc2           # Service Organization Control
-  br comply gdpr           # EU Data Protection
-
-  # View reports
-  br comply report
-
-SUPPORTED FRAMEWORKS:
-  💳 PCI-DSS  - Payment Card Industry Data Security Standard
-  🏥 HIPAA    - Health Insurance Portability and Accountability Act
-  🔒 SOC 2    - Service Organization Control 2
-  🇪🇺 GDPR    - General Data Protection Regulation
-
-COMPLIANCE CHECKS:
-  - Network security
-  - Data encryption
-  - Access controls
-  - Audit logging
-  - Data retention
-  - Security patches
-  - Physical security
-  - Incident response
-
-SCORING:
-  90-100% - Excellent compliance
-  70-89%  - Good with improvements needed
-  0-69%   - Critical gaps detected
-
-EOF
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR COMPLY${NC}  ${DIM}Scan for violations before production does.${NC}"
+  echo -e "  ${DIM}Compliance on autopilot. GDPR · SOC2 · HIPAA.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br ${DIM}<command> [args]${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  scan [path]                     ${NC} Scan for compliance violations"
+  echo -e "  ${AMBER}  report                          ${NC} Generate compliance report"
+  echo -e "  ${AMBER}  rules                           ${NC} List active compliance rules"
+  echo -e "  ${AMBER}  fix                             ${NC} Auto-fix safe violations"
+  echo -e "  ${AMBER}  history                         ${NC} Previous scan results"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br comply scan .${NC}"
+  echo -e "  ${DIM}  br comply report${NC}"
+  echo -e "  ${DIM}  br comply rules${NC}"
+  echo -e ""
 }
-
 # Main dispatch
 init_db
 
