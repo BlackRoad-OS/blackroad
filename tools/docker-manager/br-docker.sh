@@ -1,11 +1,9 @@
 #!/usr/bin/env zsh
 
 # Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-YELLOW='\033[1;33m'
+AMBER='[38;5;214m'; PINK='[38;5;205m'; VIOLET='[38;5;135m'; BBLUE='[38;5;69m'
+GREEN='[0;32m'; RED='[0;31m'; BOLD='[1m'; DIM='[2m'; NC='[0m'
+CYAN="$AMBER"; YELLOW="$PINK"; BLUE="$BBLUE"; MAGENTA="$VIOLET"; PURPLE="$VIOLET"
 NC='\033[0m'
 
 DB_FILE="$HOME/.blackroad/docker-manager.db"
@@ -195,45 +193,22 @@ cmd_stats() {
 }
 
 cmd_help() {
-    cat << 'EOF'
-🐳 Docker Manager
-
-USAGE:
-  br docker <command> [options]
-
-CONTAINER COMMANDS:
-  ps [-a]              List running containers (--all for all)
-  start <name>         Start a container
-  stop <name>          Stop a container
-  restart <name>       Restart a container
-  logs <name> [lines]  View container logs (default: 50)
-  exec <name> [cmd]    Execute command in container (default: /bin/sh)
-  stats               Show resource usage
-
-IMAGE COMMANDS:
-  images              List images
-  pull <image>        Pull an image
-  build <path>        Build image from Dockerfile
-
-COMPOSE COMMANDS:
-  compose up          Start compose stack
-  compose down        Stop compose stack
-  compose ps          List compose services
-  compose logs        View compose logs
-
-MAINTENANCE:
-  clean               Remove unused resources
-  prune               Full system cleanup (dangerous!)
-
-EXAMPLES:
-  br docker ps -a
-  br docker start my-app
-  br docker logs my-app 100
-  br docker exec my-app bash
-  br docker compose up
-  br docker clean
-
-EOF
+    echo -e "  ${AMBER}${BOLD}◆ BR DOCKER${NC}  container manager\n"
+    echo -e "  ${BOLD}containers${NC}"
+    echo -e "  ${AMBER}br docker ps [-a]${NC}               list running"
+    echo -e "  ${AMBER}br docker start|stop|restart${NC}    lifecycle"
+    echo -e "  ${AMBER}br docker logs <name> [n]${NC}        tail logs"
+    echo -e "  ${AMBER}br docker exec <name> [cmd]${NC}      exec in container"
+    echo -e "  ${AMBER}br docker stats${NC}                  resource usage\n"
+    echo -e "  ${BOLD}images${NC}"
+    echo -e "  ${AMBER}br docker images${NC}                 list images"
+    echo -e "  ${AMBER}br docker pull <image>${NC}           pull image"
+    echo -e "  ${AMBER}br docker build [path]${NC}           build from Dockerfile\n"
+    echo -e "  ${BOLD}compose${NC}"
+    echo -e "  ${AMBER}br docker compose up|down|ps|logs${NC}\n"
+    echo -e "  ${BOLD}maintenance${NC}"
+    echo -e "  ${AMBER}br docker clean${NC}                  remove unused"
+    echo -e "  ${AMBER}br docker prune${NC}                  ${RED}full cleanup${NC}"
 }
 
 # Main dispatch
