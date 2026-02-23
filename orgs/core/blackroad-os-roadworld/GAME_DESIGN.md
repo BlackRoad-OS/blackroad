@@ -189,6 +189,95 @@ Explore Real World → Discover Locations → Complete Missions → Earn Rewards
   - Invite friends
   - Post discoveries
 
+## Art Direction
+
+### Visual Style
+- **Medium**: Hand-crafted pixel art (NOT emoji-derived)
+- **Aesthetic**: Detailed, warm, richly textured -- inspired by Stardew Valley and Habbo Hotel
+- **Palette**: Blues and warm wood tones as anchors; orange/yellow accents for BlackRoad branding
+- **Rendering**: Clean outlines, subtle dithering for texture (wood grain, fabric), soft drop shadows
+
+### Character Sprites
+- **Proportions**: Chibi (large head, small body)
+- **Resolution**: High-detail pixel art, legible at small scales
+- **Hair**: Vibrant gradient coloring (red-orange-purple-blue spectrum)
+- **Outfit**: Dark clothing with BlackRoad "B" logo, colorful accents
+- **Accessories**: Headphones, branded gear
+- **Animation**: Walk cycle frames, idle, interact
+- **Background**: Transparent (composited onto environments)
+
+### Furniture & Props
+- **View**: Front-facing for individual items (couch, chair, desk)
+- **Style**: Clean outlines, interior shading/highlights, subtle shadow beneath
+- **Materials**: Realistic texturing -- wood grain on desks/tables, fabric dithering on upholstery
+- **Color Consistency**: Blue upholstery, warm brown wood across all furniture sets
+- **Categories**:
+  - **Office**: Desk with drawers, office chair, conference table with chairs
+  - **Residential**: Couch, bed, bookshelf, TV stand, dining table
+  - **Appliances**: Fridge, stove, washer/dryer, microwave
+  - **Recreation**: Pool table, foosball table, ping pong table, arcade machines, dartboard
+  - **Commercial**: Vending machines, food counter, display cases, shelving
+
+### Environment Views
+
+#### Top-Down (Overworld / Building Layout)
+- **Perspective**: Bird's-eye view, tile-based grid
+- **Buildings**: Visible colored rooftops (yellow/brick, blue, slate gray)
+- **Walls**: White/light gray brick exterior
+- **Walkways**: Gray stone tile forming corridors and streets
+- **Doors**: Brown wooden doors with doorknobs, "Welcome" mats at entrances
+- **Outdoor**: Green grass areas, bushes, landscaping at borders
+- **Purpose**: Overworld navigation, building selection, entering rooms
+
+#### Side-View Cross-Section (Interiors)
+- **Perspective**: 2D side-view cutaway showing room interiors
+- **Rooms stacked vertically**: Multi-floor buildings displayed as cross-sections
+- **Wall separators**: Visible between rooms, with floor/ceiling lines
+- **Fully furnished**: Every room densely detailed with props, wall art, plants, lamps
+- **Ambient details**: Pictures on walls, potted plants, rugs, lighting fixtures
+
+### Location Types
+
+#### Residential Interiors
+- **Bedroom**: Bed, desk, computer, chair, bookshelf, wall art, lamps, rug
+- **Bathroom**: Shower/tub, toilet, sink, vanity, cabinets
+- **Living Room**: TV/entertainment center, couch, coffee table, bookshelves, wall art
+- **Kitchen**: Stove, fridge, microwave, cabinets, dining table with chairs
+- **Game Room**: Couch, dartboard, pool/foosball table, arcade machine, bookshelves
+- **Laundry Room**: Washer, dryer, shelving, storage boxes
+- **Media Room**: Large TV/screen, couch, ambient wall art, mood lighting
+- **Lounge**: Couch with pillows, bookshelves, coffee table, utility equipment
+
+#### BlackRoad HQ / Office
+- **Branding**: "BLACKROAD" signage on walls and counters, branded color scheme
+- **Color Variants**: Dark theme with orange accents (branded) / Blue-yellow theme (cafeteria)
+- **Cafeteria**: Food counter with staff NPC, bar stools, menu displays
+- **Dining Area**: Tables with chairs in rows, booth seating along windows
+- **Break Room**: Vending machines, large TV/screens, plants, coffee station
+- **Game Zone**: Pool table, foosball table, ping pong table, arcade cabinets
+- **Screens**: Branded displays ("OrangeScreen", "RangeCrush" etc.)
+
+#### Shopping Mall
+- **Layout**: Multi-floor with central glass elevator, palm tree decorations
+- **Store Types**:
+  - **Tech Store**: Electronics displays, computer setups, demo stations
+  - **Toyland**: Colorful toy displays, plush items, games
+  - **Beauty**: Cosmetics counters, product shelves, pink/warm accents
+  - **Fashion**: Clothing racks, mannequins, fitting area
+  - **Sports**: Equipment displays, athletic gear, branded sections
+  - **Arcade**: Cabinet machines, prize counters, neon accents
+  - **Supermarket**: Aisles with produce, deli counter, refrigerated sections
+- **Common Areas**: Food court with tables, walkways between stores
+- **Signage**: Each store has a distinct colored sign above its entrance
+
+### Asset Pipeline Requirements
+- **Format**: PNG with transparency for sprites/props; full scene PNGs for environments
+- **Loading**: Direct image texture loading (replaces emoji-to-Canvas pipeline)
+- **Storage**: Cloudflare R2 for production assets
+- **Sprite Sheets**: Group related animations (character walk cycles) into sheets
+- **Tilesets**: Modular wall/floor/roof tiles for procedural room generation
+- **LOD**: Full-detail assets for interior views; simplified versions for overworld zoom levels
+
 ## Technical Implementation
 
 ### Data Structure
