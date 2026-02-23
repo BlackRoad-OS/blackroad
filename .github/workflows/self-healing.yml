@@ -1,11 +1,11 @@
-name: "\U0001F527 Self-Healing"
+name: 🔧 Self-Healing
 
 on:
   schedule:
     - cron: '0 6 * * *'  # Daily at 6 AM UTC
   workflow_dispatch:
   workflow_run:
-    workflows: ["\U0001F680 Auto Deploy"]
+    workflows: ["🚀 Auto Deploy"]
     types: [completed]
 
 permissions:
@@ -27,7 +27,6 @@ jobs:
         run: |
           if [ -z "$DEPLOY_URL" ]; then
             echo "::notice::DEPLOY_URL secret is not configured. Skipping health check."
-            echo "::notice::To enable monitoring, add a DEPLOY_URL secret pointing to your deployment (e.g. https://your-app.example.com)"
             echo "status=skip" >> $GITHUB_OUTPUT
           else
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/api/health" --max-time 30 || echo "000")
@@ -46,18 +45,9 @@ jobs:
         run: |
           echo "::error::Health check failed (Status: ${{ steps.health.outputs.status }})"
           echo "Triggering rollback..."
-          gh workflow run auto-deploy.yml --ref $(git rev-parse HEAD~1)
+          gh workflow run auto-deploy.yml --ref $(git rev-parse HEAD~1) || true
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - name: Attempt Auto-Fix
-        if: steps.health.outputs.status != '200' && steps.health.outputs.status != 'skip'
-        run: |
-          echo "Attempting automatic fixes..."
-          if [ -f "package.json" ]; then
-            npm ci || true
-            npm run build || true
-          fi
 
       - name: Create Issue on Failure
         if: failure()
@@ -68,7 +58,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: 'Self-Healing: Deployment Health Check Failed',
-              body: `Deployment health check failed.\n\nStatus: ${{ steps.health.outputs.status }}\nWorkflow: ${context.workflow}\nRun: ${context.runId}`,
+              body: `Deployment health check failed.\n\nWorkflow: ${context.workflow}\nRun: ${context.runId}`,
               labels: ['bug', 'deployment', 'auto-generated']
             })
 
@@ -96,16 +86,21 @@ jobs:
             BRANCH="chore/auto-update-deps-$(date +%Y%m%d)"
             git config user.name "BlackRoad Bot"
             git config user.email "bot@blackroad.io"
+            # Delete remote branch if it exists from a prior run
+            git push origin --delete "$BRANCH" 2>/dev/null || true
             git checkout -b "$BRANCH"
             git add package*.json
             git commit -m "chore: auto-update npm dependencies $(date +%Y-%m-%d)"
             git push origin "$BRANCH"
-            gh pr create \
-              --title "chore: auto-update npm dependencies $(date +%Y-%m-%d)" \
-              --body "Automated dependency update created by the self-healing workflow.\n\nPlease review the changes and merge if CI passes." \
-              --base main \
-              --head "$BRANCH" \
-              --label "dependencies"
+            # Create PR only if it doesn't exist already
+            gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' | grep -q '^[0-9]' && \
+              echo "::notice::PR already exists for branch $BRANCH" || \
+              gh pr create \
+                --title "chore: auto-update npm dependencies $(date +%Y-%m-%d)" \
+                --body "Automated dependency update created by the self-healing workflow." \
+                --base main \
+                --head "$BRANCH" \
+                --label "dependencies" || true
           else
             echo "::notice::All dependencies are up to date. No PR needed."
           fi
