@@ -33,8 +33,26 @@ audit_security() {
     [[ -f "requirements.txt" ]] && pip check 2>/dev/null
 }
 
+show_help() {
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR DEPS${NC}  ${DIM}Audit dependencies. Fix vulnerabilities.${NC}"
+  echo -e "  ${DIM}Ship clean, stay clean.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br deps ${DIM}<command>${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  check                           ${NC} Audit all dependencies (npm/pip/go/cargo)"
+  echo -e "  ${AMBER}  audit                           ${NC} Security vulnerability audit"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br deps check${NC}"
+  echo -e "  ${DIM}  br deps audit${NC}"
+  echo -e ""
+}
+
 case ${1:-check} in
     check|c) check_node; check_python; check_go ;;
     audit|a) audit_security ;;
+    help|-h|--help) show_help ;;
     *) check_node; check_python; check_go ;;
 esac
