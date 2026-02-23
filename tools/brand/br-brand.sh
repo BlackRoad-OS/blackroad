@@ -2112,6 +2112,34 @@ _cmd_export() {
 }
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────
+
+_cmd_help() {
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR BRAND${NC}  ${DIM}Brand tokens, gradients, copy.${NC}"
+  echo -e "  ${DIM}Look consistent. Ship beautiful. Every time.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br brand ${DIM}<command> [args]${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  list                            ${NC} List available brand templates"
+  echo -e "  ${AMBER}  new <template>                  ${NC} Generate from a brand template"
+  echo -e "  ${AMBER}  site                            ${NC} Build brand site"
+  echo -e "  ${AMBER}  preview <file>                  ${NC} Preview a brand file"
+  echo -e "  ${AMBER}  init                            ${NC} Initialize brand config in project"
+  echo -e "  ${AMBER}  audit <file>                    ${NC} Audit file for brand compliance"
+  echo -e "  ${AMBER}  deploy                          ${NC} Deploy brand assets"
+  echo -e "  ${AMBER}  watch                           ${NC} Watch and auto-rebuild"
+  echo -e "  ${AMBER}  export                          ${NC} Export brand package as zip"
+  echo -e "  ${AMBER}  open [file]                     ${NC} Open brand output in browser"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br brand list${NC}"
+  echo -e "  ${DIM}  br brand new landing${NC}"
+  echo -e "  ${DIM}  br brand audit src/styles.css${NC}"
+  echo -e "  ${DIM}  br brand deploy${NC}"
+  echo -e ""
+}
+
 case "${1:-list}" in
   list|ls)    _cmd_list ;;
   preview)    _cmd_preview "$2" ;;
@@ -2123,9 +2151,10 @@ case "${1:-list}" in
   watch)      _cmd_watch "${@:2}" ;;
   open)       _cmd_open "${@:2}" ;;
   export)     _cmd_export "${@:2}" ;;
+  help|-h|--help) _cmd_help ;;
   *)
-    echo -e "${RED}Unknown command: $1${NC}"
-    echo "Usage: br brand [list | init | new <template> | site | deploy | audit | watch | open | export | preview]"
+    echo -e "${RED}✗ Unknown command: $1${NC}"
+    _cmd_help
     exit 1
     ;;
 esac
