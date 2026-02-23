@@ -85,6 +85,9 @@ BR_TOOLS=(
     agent       "${BR_TOOLS_DIR}/agent-router/br-agent.sh"
     agents      "${BR_TOOLS_DIR}/agent-router/br-agent.sh"
     route       "${BR_TOOLS_DIR}/agent-router/br-agent.sh"
+    worker      "${BR_TOOLS_DIR}/worker-bridge/br-worker.sh"
+    workers     "${BR_TOOLS_DIR}/worker-bridge/br-worker.sh"
+    edge        "${BR_TOOLS_DIR}/worker-bridge/br-worker.sh"
     ci          "${BR_TOOLS_DIR}/ci-pipeline/br-ci.sh"
     pipeline    "${BR_TOOLS_DIR}/ci-pipeline/br-ci.sh"
     notify      "${BR_TOOLS_DIR}/notifications/br-notify.sh"
@@ -114,7 +117,6 @@ BR_TOOLS=(
     gateway     "${BR_TOOLS_DIR}/agent-gateway/br-gateway.sh"
     api-gw      "${BR_TOOLS_DIR}/agent-gateway/br-gateway.sh"
     tpl         "${BR_TOOLS_DIR}/brand/br-brand.sh"
-    template    "${BR_TOOLS_DIR}/brand/br-brand.sh"
     brand       "${BR_TOOLS_DIR}/brand/br-brand.sh"
     health      "${BR_TOOLS_DIR}/health-check/br-health.sh"
     check       "${BR_TOOLS_DIR}/health-check/br-health.sh"
@@ -157,6 +159,18 @@ BR_TOOLS=(
     review      "${BR_TOOLS_DIR}/review/br-review.sh"
     status-all  "${BR_TOOLS_DIR}/status-all/br-status-all.sh"
     sa          "${BR_TOOLS_DIR}/status-all/br-status-all.sh"
+    env-check   "${BR_TOOLS_DIR}/env-check/br-env-check.sh"
+    envc        "${BR_TOOLS_DIR}/env-check/br-env-check.sh"
+    port        "${BR_TOOLS_DIR}/port/br-port.sh"
+    task        "${BR_TOOLS_DIR}/task-manager/br-task-manager.sh"
+    tasks       "${BR_TOOLS_DIR}/task-manager/br-task-manager.sh"
+    log-tail    "${BR_TOOLS_DIR}/log-tail/br-log-tail.sh"
+    logt        "${BR_TOOLS_DIR}/log-tail/br-log-tail.sh"
+    ssh         "${BR_TOOLS_DIR}/ssh/br-ssh.sh"
+    template    "${BR_TOOLS_DIR}/template/br-template.sh"
+    tmpl        "${BR_TOOLS_DIR}/template/br-template.sh"
+    fleet       "${BR_TOOLS_DIR}/fleet/br-fleet.sh"
+    nodes       "${BR_TOOLS_DIR}/fleet/br-fleet.sh"
 )
 
 # Stream shortcut — delegates to gateway stream sub-command
@@ -390,7 +404,54 @@ show_help() {
     echo "║    br carpool prompt <task> - Agents write AI prompts for a task   ║"
     echo "║    br carpool interview [r] - Mock interview: 5 Qs with feedback   ║"
     echo "║    br carpool sprint <goal> - Break goal into sprint backlog       ║"
-    echo "║    br carpool react <f/url> - Quick reaction: brief+context        ║"
+    echo "║    br carpool review <text> - Writing/doc review: clarity+logic    ║"
+    echo "║    br carpool okr <goal>    - Generate OKRs + PRISM grades them    ║"
+    echo "║    br carpool explain <c>   - Socratic explanation + follow-up Q&A ║"
+    echo "║    br carpool email <subj>  - 3 agents draft email in 3 tones      ║"
+    echo "║    br carpool decision A vs B - Structured decision matrix          ║"
+    echo "║    br carpool postmortem <i>- Blameless incident postmortem doc     ║"
+    echo "║    br carpool stack <prob>  - Tech stack recommendation by layer    ║"
+    echo "║    br carpool manifesto     - Team manifesto from theme + history   ║"
+    echo "║    br carpool hypothesis <c>- Agents SUPPORT/REFUTE/NEEDS_DATA      ║"
+    echo "║    br carpool learning <t>  - Curated learning path for a topic     ║"
+    echo "║    br carpool standup-bot   - AI standup → post to webhook          ║"
+    echo "║    br carpool onboard <r>   - Onboarding plan for a new hire        ║"
+    echo "║    br carpool retro         - Sprint retro (well/delta/debt/ideas)  ║"
+    echo "║    br carpool pitch <idea>  - Elevator pitch + investor Q&A         ║"
+    echo "║    br carpool risk <plan>   - 5-agent risk analysis (security+ops)  ║"
+    echo "║    br carpool compare A vs B- Side-by-side option comparison        ║"
+    echo "║    br carpool naming <thing>- 5 agents brainstorm names (30 total)  ║"
+    echo "║    br carpool scope <feat>  - MVP / V1 / V2 / kill-list scoping     ║"
+    echo "║    br carpool persona <user>- Full user persona (6 dimensions)      ║"
+    echo "║    br carpool changelog     - AI changelog from git log             ║"
+    echo "║    br carpool diagram <sys> - ASCII architecture diagram (3 views)  ║"
+    echo "║    br carpool stories <f>   - User stories + tasks + acceptance crit║"
+    echo "║    br carpool contract <api>- Full API contract spec (5 sections)   ║"
+    echo "║    br carpool debug <symp>  - Systematic multi-angle debug session  ║"
+    echo "║    br carpool goal <goal>   - Decompose goal → actions + milestones ║"
+    echo "║    br carpool migrate <m>   - Migration plan + rollback + validation ║"
+    echo "║    br carpool prep <topic>  - Technical interview prep (4 lenses)   ║"
+    echo "║    br carpool refactor <f>  - 5-agent refactor plan for a file      ║"
+    echo "║    br carpool roadmap <p>   - Q1-Q4 + Year 2 product roadmap        ║"
+    echo "║    br carpool architect <p> - 4 design approaches + PRISM verdict   ║"
+    echo "║    br carpool tagline <p>   - 25 taglines across 5 styles           ║"
+    echo "║    br carpool resume <role> - Resume/bio coaching for a target role ║"
+    echo "║    br carpool thread <topic>- 10-tweet thread (hook→proof→CTA)       ║"
+    echo "║    br carpool estimate <t>  - Optimistic/realistic/pessimistic est.  ║"
+    echo "║    br carpool pressrelease  - Amazon working-backwards PR/FAQ        ║"
+    echo "║    br carpool values        - Extract team values from session memory ║"
+    echo "║    br carpool demo <feat>   - Full live demo script (5 sections)    ║"
+    echo "║    br carpool glossary <d>  - Domain vocabulary (40+ terms)         ║"
+    echo "║    br carpool north-star    - Identify + instrument north star metric║"
+    echo "║    br carpool faq <topic>   - 20 FAQs across 5 user mindsets        ║"
+    echo "║    br carpool checklist <c> - Pre-launch checklist (5 categories)   ║"
+    echo "║    br carpool competitor <c>- Competitive analysis + our moat       ║"
+    echo "║    br carpool meeting <p>   - Agenda + talking points + decisions   ║"
+    echo "║    br carpool support <i>   - Support response + escalation verdict ║"
+    echo "║    br carpool experiment <> - A/B test design (hypothesis→decision) ║"
+    echo "║    br carpool launch <>     - Full product launch plan              ║"
+    echo "║    br carpool abstract <>   - Explain concept at 3 depth levels     ║"
+    echo "║    br carpool debrief <>    - Post-ship debrief (metrics+lessons)   ║"
     echo "║    br carpool chain t1 t2   - Sequential topic pipeline            ║"
     echo "║    br carpool memory        - Show/clear persistent memory         ║"
     echo "║    br carpool ask <q>       - Inject follow-up into live session   ║"
@@ -592,6 +653,33 @@ show_help() {
     echo "║    br status-all quick      - One-line system summary            ║"
     echo "║    br status-all watch [N]  - Live refresh every N seconds       ║"
     echo "║                                                                   ║"
+    echo "║  ENV / PORT / TASKS:                                             ║"
+    echo "║    br env-check scan [dir]  - Scan .env files for exposed secrets║"
+    echo "║    br env-check check       - Verify required env vars set       ║"
+    echo "║    br env-check diff        - Compare .env.example vs .env       ║"
+    echo "║    br port list             - All listening ports + processes     ║"
+    echo "║    br port check <port>     - Is this port free?                 ║"
+    echo "║    br port services         - BlackRoad service ports status     ║"
+    echo "║    br port kill <port>      - Stop process on port               ║"
+    echo "║    br task post <title>     - Post a task to mesh queue          ║"
+    echo "║    br task list [status]    - List tasks (available/all/done)    ║"
+    echo "║    br task claim <id>       - Claim a task                       ║"
+    echo "║    br task complete <id>    - Mark task complete                 ║"
+    echo "║    br task assign <inst> <t>- Assign task to instance inbox      ║"
+    echo "║                                                                   ║"
+    echo "║  LOGS / SSH / SCAFFOLD:                                          ║"
+    echo "║    br log-tail [file] [N]   - Tail log file with color           ║"
+    echo "║    br log-tail watch [f]    - Live follow (tail -f)              ║"
+    echo "║    br log-tail errors       - Error summary across logs          ║"
+    echo "║    br log-tail journal [N]  - Tail memory journal                ║"
+    echo "║    br ssh list              - List all fleet SSH hosts           ║"
+    echo "║    br ssh <name>            - Connect to host by name            ║"
+    echo "║    br ssh run <host> <cmd>  - Run command on remote host         ║"
+    echo "║    br ssh run-all <cmd>     - Run on all fleet hosts             ║"
+    echo "║    br ssh ping              - Ping all fleet hosts               ║"
+    echo "║    br template new <t> <n>  - Scaffold tool/agent/workflow       ║"
+    echo "║    br template types        - List template types                ║"
+    echo "║                                                                   ║"
     echo "║  VERCEL (▲ Deployments):                                         ║"
     echo "║    br vercel deploy         - Deploy to preview                   ║"
     echo "║    br vercel prod           - Deploy to production                ║"
@@ -633,12 +721,62 @@ show_help() {
 cmd_status() {
     local agent=$1
 
-    if [[ -n "$agent" ]]; then
+    if [[ "$agent" == "--live" ]] || [[ "$agent" == "live" ]]; then
+        # Full live system status
+        echo -e "\n${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+        echo -e "${CYAN}║       🌌 BLACKROAD OS — LIVE SYSTEM STATUS           ║${NC}"
+        echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}\n"
+
+        # Fleet
+        echo -e "${YELLOW}🍓 Pi Fleet${NC}"
+        bash /Users/alexa/blackroad/br pi status 2>/dev/null | grep -E "●|cpu=|worlds=" | head -6 | sed 's/^/  /'
+        echo ""
+
+        # Worlds
+        echo -e "${YELLOW}🌍 World Artifacts${NC}"
+        bash /Users/alexa/blackroad/br worlds stats 2>/dev/null | sed 's/^/  /'
+        echo ""
+
+        # Agents
+        echo -e "${YELLOW}🤖 Local Agents${NC}"
+        local backend=$(detect_backend)
+        echo "  Inference: $backend"
+        for a in octavia lucidia alice aria shellfish; do
+            local db="${MEMORY_DIR}/${a}.db"
+            if [[ -f "$db" ]]; then
+                local count=$(sqlite3 "$db" "SELECT COUNT(*) FROM memories;" 2>/dev/null || echo "0")
+                echo -e "  ${AGENT_COLORS[$a]}●${NC} $a: $count memories"
+            else
+                echo "  ○ $a: not initialized"
+            fi
+        done
+        echo ""
+
+        # Gateway
+        echo -e "${YELLOW}🚪 Gateway${NC}"
+        if curl -sf http://127.0.0.1:8787/health &>/dev/null; then
+            echo -e "  ${GREEN}✓${NC} Gateway online :8787"
+        else
+            echo -e "  ${RED}✗${NC} Gateway offline  →  br gateway start"
+        fi
+
+        # MCP
+        if curl -sf http://127.0.0.1:8420/ &>/dev/null; then
+            echo -e "  ${GREEN}✓${NC} MCP Bridge online :8420"
+        else
+            echo -e "  ${RED}✗${NC} MCP Bridge offline  →  br mcp start"
+        fi
+        echo ""
+    elif [[ -n "$agent" ]]; then
         agent_status "$agent"
     else
         echo "╔═══════════════════════════════════════════════════════════════════╗"
         echo "║              BLACKROAD AGENT STATUS                               ║"
         echo "╚═══════════════════════════════════════════════════════════════════╝"
+        echo ""
+        echo "  Usage:  br status           → agent memory status"
+        echo "          br status --live    → full live system health"
+        echo "          br status <agent>   → single agent status"
         echo ""
 
         local backend=$(detect_backend)
@@ -957,6 +1095,54 @@ main() {
                 prompt)     bash /Users/alexa/blackroad/carpool.sh prompt "$@" ;;
                 interview)  bash /Users/alexa/blackroad/carpool.sh interview "$@" ;;
                 sprint)     bash /Users/alexa/blackroad/carpool.sh sprint "$@" ;;
+                review)     bash /Users/alexa/blackroad/carpool.sh review "$@" ;;
+                okr)        bash /Users/alexa/blackroad/carpool.sh okr "$@" ;;
+                explain)    bash /Users/alexa/blackroad/carpool.sh explain "$@" ;;
+                email)      bash /Users/alexa/blackroad/carpool.sh email "$@" ;;
+                decision)   bash /Users/alexa/blackroad/carpool.sh decision "$@" ;;
+                postmortem|post) bash /Users/alexa/blackroad/carpool.sh postmortem "$@" ;;
+                stack)      bash /Users/alexa/blackroad/carpool.sh stack "$@" ;;
+                manifesto)  bash /Users/alexa/blackroad/carpool.sh manifesto ;;
+                hypothesis) bash /Users/alexa/blackroad/carpool.sh hypothesis "$@" ;;
+                learning|learn) bash /Users/alexa/blackroad/carpool.sh learning "$@" ;;
+                standup-bot|standup-post) bash /Users/alexa/blackroad/carpool.sh standup-bot "$@" ;;
+                onboard)    bash /Users/alexa/blackroad/carpool.sh onboard "$@" ;;
+                retro)      bash /Users/alexa/blackroad/carpool.sh retro ;;
+                pitch)      bash /Users/alexa/blackroad/carpool.sh pitch "$@" ;;
+                risk)       bash /Users/alexa/blackroad/carpool.sh risk "$@" ;;
+                compare)    bash /Users/alexa/blackroad/carpool.sh compare "$@" ;;
+                naming|names) bash /Users/alexa/blackroad/carpool.sh naming "$@" ;;
+                scope)      bash /Users/alexa/blackroad/carpool.sh scope "$@" ;;
+                persona)    bash /Users/alexa/blackroad/carpool.sh persona "$@" ;;
+                changelog)  bash /Users/alexa/blackroad/carpool.sh changelog "$@" ;;
+                diagram)    bash /Users/alexa/blackroad/carpool.sh diagram "$@" ;;
+                stories)    bash /Users/alexa/blackroad/carpool.sh stories "$@" ;;
+                contract)   bash /Users/alexa/blackroad/carpool.sh contract "$@" ;;
+                debug)      bash /Users/alexa/blackroad/carpool.sh debug "$@" ;;
+                goal)       bash /Users/alexa/blackroad/carpool.sh goal "$@" ;;
+                migrate|migration) bash /Users/alexa/blackroad/carpool.sh migrate "$@" ;;
+                interview-prep|prep) bash /Users/alexa/blackroad/carpool.sh interview-prep "$@" ;;
+                refactor)   bash /Users/alexa/blackroad/carpool.sh refactor "$@" ;;
+                roadmap)    bash /Users/alexa/blackroad/carpool.sh roadmap "$@" ;;
+                architect)  bash /Users/alexa/blackroad/carpool.sh architect "$@" ;;
+                tagline|slogan) bash /Users/alexa/blackroad/carpool.sh tagline "$@" ;;
+                resume|bio) bash /Users/alexa/blackroad/carpool.sh resume "$@" ;;
+                thread)     bash /Users/alexa/blackroad/carpool.sh thread "$@" ;;
+                estimate|est) bash /Users/alexa/blackroad/carpool.sh estimate "$@" ;;
+                pressrelease|pr-faq|prfaq) bash /Users/alexa/blackroad/carpool.sh pressrelease "$@" ;;
+                values)     bash /Users/alexa/blackroad/carpool.sh values ;;
+                demo)       bash /Users/alexa/blackroad/carpool.sh demo "$@" ;;
+                glossary)   bash /Users/alexa/blackroad/carpool.sh glossary "$@" ;;
+                north-star|northstar) bash /Users/alexa/blackroad/carpool.sh north-star "$@" ;;
+                faq)        bash /Users/alexa/blackroad/carpool.sh faq "$@" ;;
+                checklist)  bash /Users/alexa/blackroad/carpool.sh checklist "$@" ;;
+                competitor|compete) bash /Users/alexa/blackroad/carpool.sh competitor "$@" ;;
+                meeting)    bash /Users/alexa/blackroad/carpool.sh meeting "$@" ;;
+                support)    bash /Users/alexa/blackroad/carpool.sh support "$@" ;;
+                experiment|abtest) bash /Users/alexa/blackroad/carpool.sh experiment "$@" ;;
+                launch)     bash /Users/alexa/blackroad/carpool.sh launch "$@" ;;
+                abstract|explain3) bash /Users/alexa/blackroad/carpool.sh abstract "$@" ;;
+                debrief)    bash /Users/alexa/blackroad/carpool.sh debrief "$@" ;;
                 "")         bash /Users/alexa/blackroad/carpool.sh ;;
                 *)          bash /Users/alexa/blackroad/carpool.sh "$subcmd" "$@" ;;
             esac
@@ -1015,8 +1201,8 @@ main() {
             zsh "${BR_TOOLS_DIR}/talk/br-talk.sh" "$@"
             ;;
         ssh)
-            # br ssh <node> — jump to any fleet node by name
-            zsh "${BR_TOOLS_DIR}/nodes/br-nodes.sh" ssh "$@"
+            # br ssh — fleet SSH manager (br-ssh.sh); delegates node ssh via subcommand
+            zsh "${BR_TOOLS_DIR}/ssh/br-ssh.sh" "$@"
             ;;
         email|emails|mail)
             # br mail — agent email at @blackroad.io
@@ -1127,6 +1313,104 @@ except: print('  Ollama not running')
                     echo "Usage: br mcp [start|stop|status|logs]"
                     ;;
             esac
+            ;;
+        worlds)
+            # br worlds [list|view <id>|node <name>|stats] — view Pi-generated world artifacts
+            local subcmd="${1:-list}"; shift 2>/dev/null || true
+            local WREPO="BlackRoad-OS-Inc/blackroad-agents"
+            case $subcmd in
+                list|ls|"")
+                    local limit="${1:-15}"
+                    echo -e "${CYAN}🌌 Recent World Artifacts${NC} (${WREPO})"
+                    echo ""
+                    gh api "repos/${WREPO}/git/trees/main?recursive=1" 2>/dev/null \
+                        | python3 -c "
+import sys, json, re
+data = json.load(sys.stdin)
+paths = [f['path'] for f in data.get('tree', []) if f['path'].endswith('.md') and ('worlds/' in f['path'] or 'alice-worlds/' in f['path'])]
+worlds = []
+for p in paths:
+    m = re.match(r'([\w-]+)/((\d{8})_(\d{6})_(world|lore|code)_(.+))\.md', p)
+    if m:
+        dir_, fname, date, time, type_, slug = m.group(1),m.group(2),m.group(3),m.group(4),m.group(5),m.group(6)
+        node = 'aria64' if dir_ == 'worlds' else dir_.replace('-worlds','')
+        ts = f'{date[:4]}-{date[4:6]}-{date[6:8]} {time[:2]}:{time[2:4]}'
+        icon = {'world':'🌍','lore':'📖','code':'💻'}.get(type_,'🌌')
+        title = slug.replace('-',' ').title()
+        worlds.append((ts, icon, node, title))
+worlds.sort(reverse=True)
+nc='\033[0m'; pc='\033[0;35m'; gc='\033[0;32m'
+limit=int('$limit')
+for ts,icon,node,title in worlds[:limit]:
+    c=pc if node=='aria64' else gc
+    print(f'  {icon}  {ts}  {c}@{node}{nc}  {title}')
+print(f'\n  Total: {len(worlds)} | aria64: {sum(1 for w in worlds if w[2]==\"aria64\")} | alice: {sum(1 for w in worlds if w[2]==\"alice\")}')
+"
+                    ;;
+                stats)
+                    echo -e "${CYAN}🌌 World Stats${NC}"
+                    gh api "repos/${WREPO}/git/trees/main?recursive=1" 2>/dev/null \
+                        | python3 -c "
+import sys,json,re
+data=json.load(sys.stdin)
+paths=[f['path'] for f in data.get('tree',[]) if f['path'].endswith('.md') and ('worlds/' in f['path'] or 'alice-worlds/' in f['path'])]
+by_type={};by_node={}
+for p in paths:
+    m=re.match(r'([\w-]+)/((\d{8})_(\d{6})_(world|lore|code)_(.+))\.md',p)
+    if m:
+        dir_,type_=m.group(1),m.group(5)
+        node='aria64' if dir_=='worlds' else dir_.replace('-worlds','')
+        by_type[type_]=by_type.get(type_,0)+1; by_node[node]=by_node.get(node,0)+1
+print(f'  Total: {len(paths)}')
+[print(f'  @{k}: {v}') for k,v in sorted(by_node.items())]
+[print(f'  {k}: {v}') for k,v in sorted(by_type.items())]
+"
+                    ;;
+                node)
+                    local node="${1:-aria64}"; local limit="${2:-10}"
+                    echo -e "${CYAN}🌌 Worlds from @${node}${NC}"
+                    gh api "repos/${WREPO}/git/trees/main?recursive=1" 2>/dev/null \
+                        | python3 -c "
+import sys,json,re
+data=json.load(sys.stdin)
+node='$node'; limit=int('$limit')
+worlds=[]
+for f in data.get('tree',[]):
+    p=f['path']
+    m=re.match(r'([\w-]+)/((\d{8})_(\d{6})_(world|lore|code)_(.+))\.md',p)
+    if m:
+        dir_,fname,date,time_,type_,slug=m.group(1),m.group(2),m.group(3),m.group(4),m.group(5),m.group(6)
+        n='aria64' if dir_=='worlds' else dir_.replace('-worlds','')
+        if n==node:
+            ts=f'{date[:4]}-{date[4:6]}-{date[6:8]} {time_[:2]}:{time_[2:4]}'
+            icon={'world':'🌍','lore':'📖','code':'💻'}.get(type_,'🌌')
+            worlds.append((ts,icon,slug.replace('-',' ').title()))
+worlds.sort(reverse=True)
+[print(f'  {icon}  {ts}  {title}') for ts,icon,title in worlds[:limit]]
+"
+                    ;;
+                view)
+                    local id="$1"
+                    [[ -z "$id" ]] && { echo "Usage: br worlds view <world-id>"; exit 1; }
+                    local content
+                    content=$(gh api "repos/${WREPO}/contents/worlds/${id}.md" 2>/dev/null \
+                        | python3 -c "import sys,json,base64;d=json.load(sys.stdin);print(base64.b64decode(d['content']).decode())" 2>/dev/null)
+                    [[ -z "$content" ]] && content=$(gh api "repos/${WREPO}/contents/alice-worlds/${id}.md" 2>/dev/null \
+                        | python3 -c "import sys,json,base64;d=json.load(sys.stdin);print(base64.b64decode(d['content']).decode())" 2>/dev/null)
+                    [[ -z "$content" ]] && { echo "${RED}World '${id}' not found${NC}"; exit 1; }
+                    echo -e "${CYAN}🌌 ${id}${NC}\n"; echo "$content"
+                    ;;
+                *)  echo "Usage: br worlds [list|stats|node <name>|view <id>]" ;;
+            esac
+            ;;
+        template|tmpl)
+            zsh "${BR_TOOLS_DIR}/template/br-template.sh" "$@"
+            ;;
+        log-tail|logt)
+            zsh "${BR_TOOLS_DIR}/log-tail/br-log-tail.sh" "$@"
+            ;;
+        ssh)
+            zsh "${BR_TOOLS_DIR}/ssh/br-ssh.sh" "$@"
             ;;
         *)
             # Data-driven tool dispatch
