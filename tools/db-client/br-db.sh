@@ -247,46 +247,28 @@ cmd_remove() {
 }
 
 cmd_help() {
-    cat << 'EOF'
-💾 Database Client
-
-USAGE:
-  br db <command> [options]
-
-CONNECTION MANAGEMENT:
-  add <name> <type> <conn>  Add connection
-  list                      List all connections
-  connect <name>            Connect interactively
-  remove <name>             Remove connection
-
-QUERY COMMANDS:
-  query <name> <sql>        Execute query
-  tables <name>             List tables/collections
-  history [name]            Show query history
-
-TYPES:
-  postgres   PostgreSQL database
-  mysql      MySQL/MariaDB database
-  sqlite     SQLite file
-  mongodb    MongoDB database
-
-CONNECTION FORMATS:
-  postgres/mysql: host:port/database:user:pass
-  mongodb:        host:port/database:user:pass
-  sqlite:         /path/to/file.db
-
-EXAMPLES:
-  br db add prod postgres localhost:5432/myapp:admin:secret
-  br db add local sqlite ./dev.db
-  br db list
-  br db connect prod
-  br db query prod "SELECT * FROM users LIMIT 10"
-  br db tables prod
-  br db history
-
-EOF
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR DB${NC}  ${DIM}Query anything, anywhere.${NC}"
+  echo -e "  ${DIM}SQLite · Postgres · MySQL. Data at your fingertips.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br ${DIM}<command> [args]${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  connect <url>                   ${NC} Connect to a database"
+  echo -e "  ${AMBER}  query <sql>                     ${NC} Run a SQL query"
+  echo -e "  ${AMBER}  tables                          ${NC} List all tables"
+  echo -e "  ${AMBER}  describe <table>                ${NC} Show table schema"
+  echo -e "  ${AMBER}  export <table> [fmt]            ${NC} Export: csv/json/sql"
+  echo -e "  ${AMBER}  import <file>                   ${NC} Import SQL/CSV file"
+  echo -e "  ${AMBER}  status                          ${NC} Connection status and stats"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br db connect sqlite://~/.blackroad/my.db${NC}"
+  echo -e "  ${DIM}  br db query "SELECT * FROM users LIMIT 5"${NC}"
+  echo -e "  ${DIM}  br db tables${NC}"
+  echo -e "  ${DIM}  br db export sessions csv${NC}"
+  echo -e ""
 }
-
 # Main dispatch
 init_db
 
