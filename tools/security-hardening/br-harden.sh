@@ -342,67 +342,27 @@ cmd_fix() {
 
 # Help
 cmd_help() {
-    cat << 'EOF'
-🛡️ Security Hardening
-
-USAGE:
-  br harden <command> [options]
-
-COMMANDS:
-  check                    Run all security checks
-  report                   Show detailed report
-  fix [--home]             Auto-fix common issues
-
-EXAMPLES:
-  # Run security audit
-  br harden check
-
-  # Show detailed report
-  br harden report
-
-  # Auto-fix issues
-  br harden fix
-  br harden fix --home     # Include home directory
-
-CHECKS PERFORMED:
-  🔐 SSH Configuration
-     - Root login disabled
-     - Password authentication
-     - SSH protocol version
-     
-  🔥 Firewall
-     - Firewall enabled
-     - Default rules
-     
-  📁 File Permissions
-     - Home directory
-     - SSH directory
-     - Private keys
-     
-  🖥️  Services
-     - Unnecessary services
-     - Vulnerable services
-     
-  ⬆️  Updates
-     - System updates
-     - Security patches
-     
-  🔑 Password Policy
-     - Complexity requirements
-     - Expiration
-     
-  🌐 Network Security
-     - Open ports
-     - DNS configuration
-
-SEVERITY LEVELS:
-  🔴 HIGH   - Critical security issues
-  🟡 MEDIUM - Important improvements
-  🟢 LOW    - Minor recommendations
-
-EOF
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR HARDEN${NC}  ${DIM}Lock it down before they get in.${NC}"
+  echo -e "  ${DIM}Security hardening, automated.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br ${DIM}<command> [args]${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  scan                            ${NC} Audit system security posture"
+  echo -e "  ${AMBER}  apply                           ${NC} Apply recommended hardening"
+  echo -e "  ${AMBER}  ssh                             ${NC} Harden SSH configuration"
+  echo -e "  ${AMBER}  firewall                        ${NC} Configure firewall rules"
+  echo -e "  ${AMBER}  report                          ${NC} Security hardening report"
+  echo -e "  ${AMBER}  status                          ${NC} Current hardening status"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br harden scan${NC}"
+  echo -e "  ${DIM}  br harden apply${NC}"
+  echo -e "  ${DIM}  br harden ssh${NC}"
+  echo -e "  ${DIM}  br harden report${NC}"
+  echo -e ""
 }
-
 # Main dispatch
 init_db
 
