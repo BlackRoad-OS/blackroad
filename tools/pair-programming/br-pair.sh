@@ -3,6 +3,9 @@
 # BR Pair - AI Pair Programming
 # Interactive coding assistant that watches and helps
 #===============================================================================
+AMBER='\033[38;5;214m'; PINK='\033[38;5;205m'; VIOLET='\033[38;5;135m'; BBLUE='\033[38;5;69m'
+GREEN='\033[0;32m'; RED='\033[0;31m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
+CYAN="$AMBER"; YELLOW="$PINK"; BLUE="$BBLUE"; MAGENTA="$VIOLET"; PURPLE="$VIOLET"
 
 PAIR_HOME="/Users/alexa/blackroad/tools/pair-programming"
 SESSION_FILE="${PAIR_HOME}/current-session.json"
