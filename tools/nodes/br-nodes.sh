@@ -633,37 +633,29 @@ cmd_web() {
 
 # ─── Help ────────────────────────────────────────────────────────────────────
 show_help() {
-  cat <<HELP
-${BOLD}br nodes${NC} — Fleet discovery and inventory
-
-${BOLD}COMMANDS${NC}
-  scan          Full fleet scan (ping + SSH + device inventory)
-  status        Quick status table of all known nodes
-  show <name>   Detailed view of one node (name or IP)
-  devices       All USB/serial/video devices across fleet
-  topology      ASCII topology diagram
-  fix           Apply known fixes (hostname, WAL mode, etc.)
-  ping          Quick ping health check
-  ssh <name>    SSH into a node by alias
-  web           JSON output (for gateway integration)
-
-${BOLD}EXAMPLES${NC}
-  br nodes scan
-  br nodes status
-  br nodes show cecilia
-  br nodes devices
-  br nodes topology
-  br nodes ssh octavia
-
-${BOLD}ENVIRONMENT${NC}
-  BLACKROAD_SCAN_SUBNET   LAN prefix (default: 192.168.4)
-  BLACKROAD_SSH_USER      Default SSH user (default: blackroad)
-
-${BOLD}DATABASE${NC}
-  $DB
-HELP
+  echo -e ""
+  echo -e "  ${AMBER}${BOLD}◆ BR NODES${NC}  ${DIM}Scan your fleet. Own your network.${NC}"
+  echo -e "  ${DIM}Zero blind spots. Every device, every node.${NC}"
+  echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+  echo -e "  ${BOLD}USAGE${NC}  br ${DIM}<command> [args]${NC}"
+  echo -e ""
+  echo -e "  ${BOLD}COMMANDS${NC}"
+  echo -e "  ${AMBER}  scan                            ${NC} Full fleet scan — ping + SSH + device inventory"
+  echo -e "  ${AMBER}  status                          ${NC} Quick status table of all known nodes"
+  echo -e "  ${AMBER}  show <name>                     ${NC} Detailed view of one node (name or IP)"
+  echo -e "  ${AMBER}  devices                         ${NC} All USB/serial/video devices across fleet"
+  echo -e "  ${AMBER}  topology                        ${NC} ASCII network topology diagram"
+  echo -e "  ${AMBER}  fix                             ${NC} Apply known fixes (hostname, WAL mode, etc.)"
+  echo -e "  ${AMBER}  ping                            ${NC} Quick ping health check"
+  echo -e "  ${AMBER}  ssh <name>                      ${NC} SSH into a node by alias"
+  echo -e ""
+  echo -e "  ${BOLD}EXAMPLES${NC}"
+  echo -e "  ${DIM}  br nodes scan${NC}"
+  echo -e "  ${DIM}  br nodes status${NC}"
+  echo -e "  ${DIM}  br nodes show cecilia${NC}"
+  echo -e "  ${DIM}  br nodes ssh octavia${NC}"
+  echo -e ""
 }
-
 # ─── Main ────────────────────────────────────────────────────────────────────
 case "${1:-help}" in
   mac|mac-devices|local) cmd_mac_devices ;;
