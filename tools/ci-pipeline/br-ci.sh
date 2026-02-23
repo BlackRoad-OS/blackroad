@@ -3,10 +3,9 @@
 # Complete pipeline orchestration with stages, tracking, and intelligent execution
 
 # Colors
-AMBER='[38;5;214m'; PINK='[38;5;205m'; VIOLET='[38;5;135m'; BBLUE='[38;5;69m'
-GREEN='[0;32m'; RED='[0;31m'; BOLD='[1m'; DIM='[2m'; NC='[0m'
+AMBER='\033[38;5;214m'; PINK='\033[38;5;205m'; VIOLET='\033[38;5;135m'; BBLUE='\033[38;5;69m'
+GREEN='\033[0;32m'; RED='\033[0;31m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
 CYAN="$AMBER"; YELLOW="$PINK"; BLUE="$BBLUE"; MAGENTA="$VIOLET"; PURPLE="$VIOLET"
-NC='\033[0m'
 
 DB_FILE="$HOME/.blackroad/ci-pipeline.db"
 
@@ -309,21 +308,127 @@ cmd_add_stage() {
 
 # Watch pipeline
 cmd_watch() {
-    init_db
-    local name="${1}"
-    
-    if [[ -z "$name" ]]; then
-        echo -e "${RED}❌ Usage: br ci watch <pipeline>${NC}"
-        exit 1
+    # Live GitHub Actions dashboard — polls every 5s
+    local interval=${1:-5}
+    local repo_arg=${2:-}
+
+    # Detect repo from git remote
+    local repo
+    if [[ -n "$repo_arg" ]]; then
+        repo="$repo_arg"
+    else
+        repo=$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||;s|\.git$||')
     fi
-    
-    echo -e "${CYAN}👁️  Watching pipeline: $name${NC}"
-    echo -e "${YELLOW}Press Ctrl+C to stop${NC}\n"
-    
-    while true; do
+
+    if [[ -z "$repo" ]]; then
+        echo -e "  ${RED}✗${NC} no GitHub repo detected. usage: br ci watch [interval] [owner/repo]"
+        return 1
+    fi
+
+    # Check gh auth
+    if ! gh auth status &>/dev/null; then
+        echo -e "  ${RED}✗${NC} not logged in to GitHub CLI. run: gh auth login"
+        return 1
+    fi
+
+    local draw_dashboard
+    draw_dashboard() {
         clear
-        cmd_status "$name"
-        sleep 3
+        echo ""
+        echo -e "  ${AMBER}${BOLD}◆ BR CI${NC}  ${DIM}live  ·  $repo  ·  every ${interval}s  ·  Ctrl+C to exit${NC}"
+        echo -e "  ${DIM}────────────────────────────────────────────────────────────────${NC}"
+        echo ""
+
+        # Fetch recent runs
+        local runs
+        runs=$(gh api "repos/${repo}/actions/runs?per_page=12" \
+            --jq '.workflow_runs[] | [.name, .head_branch, .status, .conclusion, .run_number, .updated_at, .id] | @tsv' \
+            2>/dev/null)
+
+        if [[ -z "$runs" ]]; then
+            echo -e "  ${DIM}no workflow runs found${NC}"
+            echo ""
+            return
+        fi
+
+        # Column headers
+        printf "  ${BOLD}%-28s %-18s %-12s %-10s %s${NC}\n" "WORKFLOW" "BRANCH" "STATUS" "RUN" "UPDATED"
+        echo -e "  ${DIM}$(printf '%.0s─' {1..70})${NC}"
+
+        echo "$runs" | while IFS=$'\t' read -r name branch status conclusion num updated id; do
+            # Status icon + color
+            local icon color
+            case "$conclusion" in
+                success)   icon="✓"; color="$GREEN" ;;
+                failure)   icon="✗"; color="$RED" ;;
+                cancelled) icon="○"; color="$DIM" ;;
+                skipped)   icon="–"; color="$DIM" ;;
+                *)
+                    case "$status" in
+                        in_progress) icon="●"; color="$AMBER" ;;
+                        queued)      icon="◌"; color="$VIOLET" ;;
+                        *)           icon="?"; color="$DIM" ;;
+                    esac ;;
+            esac
+
+            # Trim name to 26 chars
+            name="${name:0:26}"
+            branch="${branch:0:16}"
+
+            # Age
+            local age
+            age=$(python3 -c "
+import sys, time
+from datetime import datetime, timezone
+try:
+    t = datetime.fromisoformat('${updated}'.replace('Z','+00:00'))
+    delta = int(time.time()) - int(t.timestamp())
+    h,m = delta//3600, (delta%3600)//60
+    print(f'{h}h {m}m ago' if h else f'{m}m ago')
+except: print('—')
+" 2>/dev/null)
+
+            local disp_status="${status}"
+            [[ -n "$conclusion" ]] && disp_status="$conclusion"
+
+            printf "  ${color}${icon}${NC}  ${BOLD}%-26s${NC}  ${DIM}%-16s${NC}  ${color}%-10s${NC}  ${DIM}#%-6s${NC}  ${DIM}%s${NC}\n" \
+                "$name" "$branch" "$disp_status" "$num" "$age"
+        done
+
+        echo ""
+        echo -e "  ${DIM}In-progress runs:${NC}"
+        echo "$runs" | while IFS=$'\t' read -r name branch status conclusion num updated id; do
+            [[ "$status" != "in_progress" ]] && continue
+            # Get jobs for this run
+            local jobs
+            jobs=$(gh api "repos/${repo}/actions/runs/${id}/jobs?per_page=8" \
+                --jq '.jobs[] | [.name, .status, .conclusion] | @tsv' 2>/dev/null)
+            echo -e "  ${AMBER}${BOLD}$name${NC}  ${DIM}#$num${NC}"
+            echo "$jobs" | while IFS=$'\t' read -r jname jstatus jconc; do
+                local ji jc
+                case "$jconc" in
+                    success) ji="✓"; jc="$GREEN" ;;
+                    failure) ji="✗"; jc="$RED" ;;
+                    *)
+                        case "$jstatus" in
+                            in_progress) ji="●"; jc="$AMBER" ;;
+                            *) ji="○"; jc="$DIM" ;;
+                        esac ;;
+                esac
+                printf "    ${jc}${ji}${NC}  ${DIM}%s${NC}\n" "$jname"
+            done
+        done
+
+        echo ""
+        printf "  ${DIM}last updated: %s${NC}\n" "$(date '+%H:%M:%S')"
+        echo ""
+    }
+
+    # Initial draw then loop
+    draw_dashboard
+    while true; do
+        sleep "$interval"
+        draw_dashboard
     done
 }
 
@@ -345,17 +450,22 @@ cmd_remove_stage() {
 
 # Help
 cmd_help() {
-    echo -e "  ${AMBER}${BOLD}◆ BR CI${NC}  pipeline manager\n"
-    echo -e "  ${AMBER}br ci create <name>${NC}         create pipeline"
-    echo -e "  ${AMBER}br ci list${NC}                  list pipelines"
-    echo -e "  ${AMBER}br ci run <name>${NC}             run pipeline"
-    echo -e "  ${AMBER}br ci status [name]${NC}          check status"
-    echo -e "  ${AMBER}br ci history [name]${NC}         execution history"
-    echo -e "  ${AMBER}br ci logs <run-id>${NC}          view run logs\n"
-    echo -e "  ${BOLD}stages${NC}"
-    echo -e "  ${AMBER}br ci stages <name>${NC}          list stages"
-    echo -e "  ${AMBER}br ci add-stage <name> <stage>${NC} add stage\n"
-    echo -e "  ${DIM}Stages: test · lint · build · deploy · notify${NC}"
+    echo ""
+    echo -e "  ${AMBER}${BOLD}◆ BR CI${NC}  ${DIM}Pipeline manager + live GitHub Actions dashboard.${NC}"
+    echo -e "  ${DIM}────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "  ${AMBER}watch${NC}   [interval] [owner/repo]  live GitHub Actions dashboard"
+    echo -e "  ${AMBER}create${NC}  <name>                  create local pipeline"
+    echo -e "  ${AMBER}list${NC}                            list local pipelines"
+    echo -e "  ${AMBER}run${NC}     <name>                  run pipeline"
+    echo -e "  ${AMBER}status${NC}  [name]                  check status"
+    echo -e "  ${AMBER}history${NC} [name]                  execution history"
+    echo -e "  ${AMBER}logs${NC}    <run-id>                view run logs"
+    echo -e "  ${AMBER}stages${NC}  <name>                  list stages"
+    echo -e "  ${AMBER}add-stage${NC} <name> <stage>        add stage"
+    echo ""
+    echo -e "  ${DIM}stages: test · lint · build · deploy · notify${NC}"
+    echo ""
 }
 
 # Main dispatch
@@ -366,9 +476,10 @@ case "${1:-help}" in
     run|r) cmd_run "${@:2}" ;;
     list|ls|l) cmd_list ;;
     status|stat|s) cmd_status "${@:2}" ;;
-    watch|w) cmd_watch "${@:2}" ;;
+    watch|w|live) cmd_watch "${@:2}" ;;
     add-stage|add) cmd_add_stage "${@:2}" ;;
     remove-stage|rm) cmd_remove_stage "${@:2}" ;;
+    history|hist) cmd_history "${@:2}" ;;
     help|--help|-h) cmd_help ;;
     *)
         echo -e "${RED}❌ Unknown command: $1${NC}"
