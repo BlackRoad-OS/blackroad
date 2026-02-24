@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: Detect version bump
         id: version
@@ -173,7 +175,7 @@ jobs:
             execSync(`git commit -m "🤖 chore: Bump version to ${newVersion}"`);
 
             // Create tag
-            execSync(`git tag -a v${newVersion} -m "Release v${newVersion}"`);
+            execSync(`git tag -d v${newVersion} 2>/dev/null || true; git tag -a v${newVersion} -m "Release v${newVersion}"`);
             execSync(`git push origin main --tags`);
 
             // Create GitHub release
