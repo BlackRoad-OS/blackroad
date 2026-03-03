@@ -13,7 +13,7 @@ jobs:
   sync-workflows:
     runs-on: [self-hosted, blackroad-fleet]
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Report workflow sync status
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
