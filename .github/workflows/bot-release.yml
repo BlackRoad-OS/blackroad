@@ -31,7 +31,7 @@ jobs:
 
       - name: Detect version bump
         id: version
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const fs = require('fs');
@@ -72,7 +72,7 @@ jobs:
       - name: Bump version
         if: steps.version.outputs.should_release == 'true'
         id: bump
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const fs = require('fs');
@@ -103,7 +103,7 @@ jobs:
       - name: Generate changelog
         if: steps.version.outputs.should_release == 'true'
         id: changelog
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const { execSync } = require('child_process');
@@ -160,7 +160,7 @@ jobs:
 
       - name: Create release
         if: steps.version.outputs.should_release == 'true'
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const { execSync } = require('child_process');
